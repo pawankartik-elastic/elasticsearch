@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -81,6 +82,8 @@ public final class SearchResponseMerger implements Releasable {
         }
     });
 
+    private final Optional<CrossProjectSearchMetrics> cpsMetrics;
+
     SearchResponseMerger(
         int from,
         int size,
@@ -88,11 +91,23 @@ public final class SearchResponseMerger implements Releasable {
         SearchTimeProvider searchTimeProvider,
         AggregationReduceContext.Builder aggReduceContextBuilder
     ) {
+        this(from, size, trackTotalHitsUpTo, searchTimeProvider, aggReduceContextBuilder, Optional.empty());
+    }
+
+    SearchResponseMerger(
+        int from,
+        int size,
+        int trackTotalHitsUpTo,
+        SearchTimeProvider searchTimeProvider,
+        AggregationReduceContext.Builder aggReduceContextBuilder,
+        Optional<CrossProjectSearchMetrics> cpsMetrics
+    ) {
         this.from = from;
         this.size = size;
         this.trackTotalHitsUpTo = trackTotalHitsUpTo;
         this.searchTimeProvider = Objects.requireNonNull(searchTimeProvider);
         this.aggReduceContextBuilder = aggReduceContextBuilder; // might be null if there are no aggregations
+        this.cpsMetrics = cpsMetrics; // Empty if non-CPS
     }
 
     /**
@@ -146,6 +161,10 @@ public final class SearchResponseMerger implements Releasable {
 
             Collections.addAll(failures, searchResponse.getShardFailures());
 
+            /*
+             * If cpsMetrics is non-empty, we can dump its contents into the search response, and add the required
+             * XContent support.
+             */
             profileResults.putAll(searchResponse.getProfileResults());
 
             if (searchResponse.hasAggregations()) {

@@ -552,7 +552,8 @@ public class TransportSearchActionTests extends ESTestCase {
                 listener,
                 (r, l) -> setOnce.set(Tuple.tuple(r, l)),
                 service,
-                null
+                null,
+                Optional.empty()
             );
             if (localIndices == null) {
                 assertNull(setOnce.get());
@@ -629,7 +630,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     listener,
                     (r, l) -> setOnce.set(Tuple.tuple(r, l)),
                     service,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());
@@ -687,7 +689,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     listener,
                     (r, l) -> setOnce.set(Tuple.tuple(r, l)),
                     service,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());
@@ -777,7 +780,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     listener,
                     (r, l) -> setOnce.set(Tuple.tuple(r, l)),
                     service,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());
@@ -882,7 +886,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     listener,
                     (r, l) -> setOnce.set(Tuple.tuple(r, l)),
                     service,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());
@@ -935,7 +940,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     listener,
                     (r, l) -> setOnce.set(Tuple.tuple(r, l)),
                     service,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());
@@ -1010,7 +1016,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     listener,
                     (r, l) -> setOnce.set(Tuple.tuple(r, l)),
                     service,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 if (localIndices == null) {
                     assertNull(setOnce.get());
@@ -1113,7 +1120,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     null,
                     false,
                     null,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 awaitLatch(latch, 5, TimeUnit.SECONDS);
                 assertNotNull(response.get());
@@ -1147,7 +1155,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     null,
                     false,
                     null,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 awaitLatch(latch, 5, TimeUnit.SECONDS);
                 assertEquals(numClusters, clusters.getClusterStateCount(SearchResponse.Cluster.Status.FAILED));
@@ -1204,7 +1213,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     null,
                     false,
                     null,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 awaitLatch(latch, 5, TimeUnit.SECONDS);
                 assertEquals(numDisconnectedClusters, clusters.getClusterStateCount(SearchResponse.Cluster.Status.FAILED));
@@ -1239,7 +1249,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     null,
                     false,
                     null,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 awaitLatch(latch, 5, TimeUnit.SECONDS);
                 assertNotNull(response.get());
@@ -1290,7 +1301,8 @@ public class TransportSearchActionTests extends ESTestCase {
                     null,
                     false,
                     null,
-                    null
+                    null,
+                    Optional.empty()
                 );
                 awaitLatch(latch, 5, TimeUnit.SECONDS);
                 assertEquals(0, clusters.getClusterStateCount(SearchResponse.Cluster.Status.SKIPPED));
@@ -1322,7 +1334,8 @@ public class TransportSearchActionTests extends ESTestCase {
                 SearchResponseMerger merger = TransportSearchAction.createSearchResponseMerger(
                     source,
                     timeProvider,
-                    emptyReduceContextBuilder()
+                    emptyReduceContextBuilder(),
+                    Optional.empty()
                 )
             ) {
                 assertEquals(0, merger.from);
@@ -1338,7 +1351,8 @@ public class TransportSearchActionTests extends ESTestCase {
                 SearchResponseMerger merger = TransportSearchAction.createSearchResponseMerger(
                     null,
                     timeProvider,
-                    emptyReduceContextBuilder()
+                    emptyReduceContextBuilder(),
+                    Optional.empty()
                 )
             ) {
                 assertEquals(0, merger.from);
@@ -1358,7 +1372,8 @@ public class TransportSearchActionTests extends ESTestCase {
                 SearchResponseMerger merger = TransportSearchAction.createSearchResponseMerger(
                     source,
                     timeProvider,
-                    emptyReduceContextBuilder()
+                    emptyReduceContextBuilder(),
+                    Optional.empty()
                 )
             ) {
                 assertEquals(0, source.from());
