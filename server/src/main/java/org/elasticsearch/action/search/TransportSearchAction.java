@@ -1421,7 +1421,6 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                 @Override
                 Map<String, SearchShardsResponse> createFinalResponse() {
                     if (resolvesCrossProject && originResolvedIdxExpressions != null) {
-                        cpsMetrics.ifPresent(c -> c.trackPlanningPhaseTookTime(overallTookTime()));
                         Map<String, ResolvedIndexExpressions> resolvedIndexExpressions = new HashMap<>();
                         for (Map.Entry<String, SearchShardsResponse> entry : searchShardsResponses.entrySet()) {
                             if (entry.getValue().getResolvedIndexExpressions() == null) {
@@ -1443,6 +1442,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                             throw validationEx;
                         }
                     }
+                    cpsMetrics.ifPresent(c -> c.trackPlanningPhaseTookTime(overallTookTime()));
                     return searchShardsResponses;
                 }
             };

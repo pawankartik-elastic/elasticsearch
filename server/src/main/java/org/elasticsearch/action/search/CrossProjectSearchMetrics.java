@@ -28,7 +28,7 @@ class CrossProjectSearchMetrics implements ToXContentFragment {
     public static final ParseField PLANNING_PHASE_TOOK_TIME_FIELD = new ParseField("planning_phase_took_time");
     public static final ParseField MERGING_PHASE_TOOK_TIME_FIELD = new ParseField("merging_phase_took_time");
     public static final String PROJECTS_TOOK_TIME_NAME = "projects_took_time";
-    public static final String PROJECT_FIELD_NAME = "projects";
+    public static final String PROJECTS_NAME = "projects";
     public static final String OVERALL_TOOK_TIME_NAME = "overall_took_time";
 
     public CrossProjectSearchMetrics() {
@@ -54,7 +54,7 @@ class CrossProjectSearchMetrics implements ToXContentFragment {
         builder.field(PLANNING_PHASE_TOOK_TIME_FIELD.getPreferredName(), planningPhaseTookTime);
         builder.field(MERGING_PHASE_TOOK_TIME_FIELD.getPreferredName(), mergingPhaseTookTime);
 
-        builder.startObject(PROJECTS_TOOK_TIME_NAME).startArray(PROJECT_FIELD_NAME);
+        builder.startObject(PROJECTS_TOOK_TIME_NAME).startArray(PROJECTS_NAME);
 
         TreeSet<String> sorted = new TreeSet<>(projectsTookTime.keySet());
         for (String projectName : sorted) {
