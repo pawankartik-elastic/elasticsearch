@@ -13,10 +13,12 @@ import java.util.HashMap;
 
 class CrossProjectSearchMetrics {
     private long planningPhaseTookTime;
+    private long mergingPhaseTookTime;
     private final HashMap<String, Long> projectsTookTime;
 
     public CrossProjectSearchMetrics() {
         this.planningPhaseTookTime = 0L;
+        this.mergingPhaseTookTime = 0L;
         this.projectsTookTime = new HashMap<>();
     }
 
@@ -26,5 +28,9 @@ class CrossProjectSearchMetrics {
 
     public void trackProjectTookTime(String projectName, long projectTookTime) {
         this.projectsTookTime.put(projectName, projectTookTime);
+    }
+
+    public void trackMergingPhaseTookTime(long mergingPhaseTookTime) {
+        this.mergingPhaseTookTime = mergingPhaseTookTime;
     }
 }

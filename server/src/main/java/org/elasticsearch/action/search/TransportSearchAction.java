@@ -1243,9 +1243,6 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
         SearchTimeProvider planningPhaseTimeProvider,
         ActionListener<Tuple<ResolvedIndices, Long>> listener
     ) {
-        // We do not want to include merging time.
-        long planningPhaseTookTime = planningPhaseTimeProvider.buildTookInMillis();
-
         Map<String, Exception> remoteExceptions = new HashMap<>();
         HashMap<String, ResolvedIndexExpressions> resolvedExpressions = new HashMap<>();
 
@@ -1314,7 +1311,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                         includeOriginProjectInMetadata ? originalResolvedIndices.getLocalIndices() : null,
                         originalResolvedIndices.getConcreteLocalIndicesMetadata()
                     ),
-                    planningPhaseTookTime
+                    planningPhaseTimeProvider.buildTookInMillis()
                 )
             );
         }

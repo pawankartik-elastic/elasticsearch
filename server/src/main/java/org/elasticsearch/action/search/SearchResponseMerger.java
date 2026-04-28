@@ -138,6 +138,13 @@ public final class SearchResponseMerger implements Releasable {
         if (searchResponses.size() == 0) {
             return SearchResponse.empty(searchTimeProvider::buildTookInMillis, clusters);
         }
+
+        SearchTimeProvider mergingPhaseTookTimeProvider = new SearchTimeProvider(
+            System.currentTimeMillis(),
+            System.nanoTime(),
+            System::nanoTime
+        );
+
         int totalShards = 0;
         int skippedShards = 0;
         int successfulShards = 0;
@@ -237,6 +244,8 @@ public final class SearchResponseMerger implements Releasable {
             // make failures ordering consistent between ordinary search and CCS by looking at the shard they come from
             Arrays.sort(shardFailures, FAILURES_COMPARATOR);
             long tookInMillis = searchTimeProvider.buildTookInMillis();
+            cpsMetrics.ifPresent(c -> c.trackMergingPhaseTookTime(mergingPhaseTookTimeProvider.buildTookInMillis()));
+
             return new SearchResponse(
                 mergedSearchHits,
                 reducedAggs,
