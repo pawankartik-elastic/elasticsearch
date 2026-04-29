@@ -132,6 +132,7 @@ public class FetchLookupFieldsPhaseTests extends ESTestCase {
                                 SearchResponseTests.randomClusters(),
                                 null,
                                 null,
+                                null,
                                 null
                             ),
                             null
