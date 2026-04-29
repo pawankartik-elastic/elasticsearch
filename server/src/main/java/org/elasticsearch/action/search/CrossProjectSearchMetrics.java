@@ -33,7 +33,6 @@ class CrossProjectSearchMetrics implements Writeable, ToXContentFragment {
     public static final ParseField MERGING_PHASE_TOOK_TIME_FIELD = new ParseField("merging_phase_took_time");
     public static final String PROJECTS_TOOK_TIME_NAME = "projects_took_time";
     public static final String PROJECTS_NAME = "projects";
-    public static final String OVERALL_TOOK_TIME_NAME = "overall_took_time";
 
     CrossProjectSearchMetrics() {
         this.planningPhaseTookTime = 0L;
@@ -71,7 +70,7 @@ class CrossProjectSearchMetrics implements Writeable, ToXContentFragment {
             long projectTookTime = projectsTookTime.get(projectName);
 
             builder.startObject();
-            builder.field(OVERALL_TOOK_TIME_NAME, projectTookTime);
+            builder.field(projectName, projectTookTime);
             builder.endObject();
         }
 
