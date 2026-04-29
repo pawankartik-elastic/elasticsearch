@@ -31,21 +31,21 @@ class CrossProjectSearchMetrics implements ToXContentFragment {
     public static final String PROJECTS_NAME = "projects";
     public static final String OVERALL_TOOK_TIME_NAME = "overall_took_time";
 
-    public CrossProjectSearchMetrics() {
+    CrossProjectSearchMetrics() {
         this.planningPhaseTookTime = 0L;
         this.mergingPhaseTookTime = 0L;
         this.projectsTookTime = new HashMap<>();
     }
 
-    public void trackPlanningPhaseTookTime(long planningPhaseTookTime) {
+    void trackPlanningPhaseTookTime(long planningPhaseTookTime) {
         this.planningPhaseTookTime = planningPhaseTookTime;
     }
 
-    public void trackProjectTookTime(String projectName, long projectTookTime) {
+    void trackProjectTookTime(String projectName, long projectTookTime) {
         this.projectsTookTime.put(projectName, projectTookTime);
     }
 
-    public void trackMergingPhaseTookTime(long mergingPhaseTookTime) {
+    void trackMergingPhaseTookTime(long mergingPhaseTookTime) {
         this.mergingPhaseTookTime = mergingPhaseTookTime;
     }
 
