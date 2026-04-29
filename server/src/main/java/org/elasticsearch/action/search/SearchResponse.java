@@ -32,6 +32,7 @@ import org.elasticsearch.rest.action.RestActions;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.InternalAggregations;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.profile.SearchProfileResults;
 import org.elasticsearch.search.profile.SearchProfileShardResult;
 import org.elasticsearch.search.suggest.Suggest;
@@ -198,7 +199,9 @@ public class SearchResponse extends ActionResponse implements ChunkedToXContentO
         long tookInMillis,
         ShardSearchFailure[] shardFailures,
         Clusters clusters,
-        BytesReference pointInTimeId
+        BytesReference pointInTimeId,
+        SearchSourceBuilder source,
+        String[] indices
     ) {
         this(
             searchResponseSections.hits,
@@ -221,6 +224,10 @@ public class SearchResponse extends ActionResponse implements ChunkedToXContentO
             null
         );
         this.timeRangeFilterFromMillis = searchResponseSections.timeRangeFilterFromMillis;
+        if (this.profileResults != null) {
+            this.profileResults.setOriginalSource(source);
+            this.profileResults.setRequestIndices(indices);
+        }
     }
 
     public SearchResponse(
@@ -473,7 +480,7 @@ public class SearchResponse extends ActionResponse implements ChunkedToXContentO
 
     /**
      * If profiling was enabled, this returns an object containing the profile results from
-     * each shard.  If profiling was not enabled, this will return null
+     * each shard.  If profiling was not enabled, this will return an empty map.
      *
      * @return The profile results or an empty map
      */
@@ -483,6 +490,18 @@ public class SearchResponse extends ActionResponse implements ChunkedToXContentO
             return Collections.emptyMap();
         }
         return profileResults.getShardResults();
+    }
+
+    /**
+     * The {@link SearchProfileResults} backing this response, including coordinator request metadata when attached
+     * ({@link SearchProfileResults#getOriginalSource()} / {@link SearchProfileResults#getRequestIndices()}).
+     * {@code null} when profiling did not produce a profile object.
+     * <p>
+     * For per-shard timings only, {@link #getProfileResults()} returns the shard map (empty when profiling was off).
+     */
+    @Nullable
+    public SearchProfileResults getSearchProfileResults() {
+        return profileResults;
     }
 
     /**

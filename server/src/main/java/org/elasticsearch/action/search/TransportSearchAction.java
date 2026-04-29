@@ -898,6 +898,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
     ) {
         final var remoteClientResponseExecutor = threadPool.executor(ThreadPool.Names.SEARCH_COORDINATION);
         if (resolvedIndices.getLocalIndices() == null && resolvedIndices.getRemoteClusterIndices().size() == 1) {
+            SearchCoordinatorContext searchCoordinatorContext = SearchCoordinatorContext.snapshotProfileCoordinatorMetadata(searchRequest);
             // if we are searching against a single remote cluster, we simply forward the original search request to such cluster
             // and we directly perform final reduction in the remote cluster
             Map.Entry<String, OriginalIndices> entry = resolvedIndices.getRemoteClusterIndices().entrySet().iterator().next();
@@ -920,10 +921,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                 public void onResponse(SearchResponse searchResponse) {
                     // overwrite the existing cluster entry with the updated one
                     ccsClusterInfoUpdate(searchResponse, clusters, clusterAlias, shouldSkipOnFailure);
-                    Map<String, SearchProfileShardResult> profileResults = searchResponse.getProfileResults();
-                    SearchProfileResults profile = profileResults == null || profileResults.isEmpty()
-                        ? null
-                        : new SearchProfileResults(profileResults);
+                    SearchProfileResults profile = getSearchProfileResults(searchResponse, searchCoordinatorContext);
 
                     ActionListener.respondAndRelease(
                         listener,
@@ -981,14 +979,22 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                 connectionListener
             );
         } else {
+            SearchCoordinatorContext searchCoordinatorContext = SearchCoordinatorContext.snapshotProfileCoordinatorMetadata(searchRequest);
             SearchResponseMerger searchResponseMerger = createSearchResponseMerger(
                 searchRequest.source(),
                 timeProvider,
                 aggReduceContextBuilder,
+                searchCoordinatorContext,
                 cpsMetrics
             );
             task.setSearchResponseMergerSupplier(
-                () -> createSearchResponseMerger(searchRequest.source(), timeProvider, aggReduceContextBuilder, cpsMetrics)
+                () -> createSearchResponseMerger(
+                    searchRequest.source(),
+                    timeProvider,
+                    aggReduceContextBuilder,
+                    searchCoordinatorContext,
+                    cpsMetrics
+                )
             );
             final AtomicReference<Exception> exceptions = new AtomicReference<>();
             int totalClusters = resolvedIndices.getRemoteClusterIndices().size() + (resolvedIndices.getLocalIndices() == null ? 0 : 1);
@@ -1073,10 +1079,22 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
         }
     }
 
+    static SearchProfileResults getSearchProfileResults(SearchResponse searchResponse, SearchCoordinatorContext searchCoordinatorContext) {
+        Map<String, SearchProfileShardResult> profileResults = searchResponse.getProfileResults();
+        SearchProfileResults profile = profileResults == null || profileResults.isEmpty() ? null : new SearchProfileResults(profileResults);
+
+        if (profile != null) {
+            profile.setOriginalSource(searchCoordinatorContext.originalSource());
+            profile.setRequestIndices(searchCoordinatorContext.requestIndices());
+        }
+        return profile;
+    }
+
     static SearchResponseMerger createSearchResponseMerger(
         SearchSourceBuilder source,
         SearchTimeProvider timeProvider,
         AggregationReduceContext.Builder aggReduceContextBuilder,
+        SearchCoordinatorContext searchCoordinatorContext,
         Optional<CrossProjectSearchMetrics> cpsMetrics
     ) {
         final int from;
@@ -1096,7 +1114,15 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
             source.from(0);
             source.size(from + size);
         }
-        return new SearchResponseMerger(from, size, trackTotalHitsUpTo, timeProvider, aggReduceContextBuilder, cpsMetrics);
+        return new SearchResponseMerger(
+            from,
+            size,
+            trackTotalHitsUpTo,
+            timeProvider,
+            aggReduceContextBuilder,
+            searchCoordinatorContext,
+            cpsMetrics
+        );
     }
 
     /**
