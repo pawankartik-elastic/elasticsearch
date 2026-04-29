@@ -168,10 +168,6 @@ public final class SearchResponseMerger implements Releasable {
 
             Collections.addAll(failures, searchResponse.getShardFailures());
 
-            /*
-             * If cpsMetrics is non-empty, we can dump its contents into the search response, and add the required
-             * XContent support.
-             */
             profileResults.putAll(searchResponse.getProfileResults());
 
             if (searchResponse.hasAggregations()) {
@@ -263,7 +259,8 @@ public final class SearchResponseMerger implements Releasable {
                 clusters,
                 null,
                 topHitsToRelease,
-                null
+                null,
+                cpsMetrics.orElse(null)
             );
         } finally {
             mergedSearchHits.decRef();

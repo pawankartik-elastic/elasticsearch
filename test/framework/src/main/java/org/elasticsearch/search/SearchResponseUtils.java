@@ -117,6 +117,7 @@ public enum SearchResponseUtils {
             clusters,
             null,
             null,
+            null,
             null
         );
     }
@@ -229,6 +230,7 @@ public enum SearchResponseUtils {
                 shardFailures == null ? ShardSearchFailure.EMPTY_ARRAY : shardFailures.toArray(ShardSearchFailure[]::new),
                 clusters,
                 pointInTimeId,
+                null,
                 null,
                 null
             );
@@ -425,6 +427,7 @@ public enum SearchResponseUtils {
             failures.toArray(ShardSearchFailure.EMPTY_ARRAY),
             clusters,
             searchContextId,
+            null,
             null,
             null
         );

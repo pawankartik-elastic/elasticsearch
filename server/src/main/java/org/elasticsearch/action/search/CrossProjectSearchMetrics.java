@@ -10,6 +10,10 @@
 package org.elasticsearch.action.search;
 
 import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.io.stream.StreamInput;
+import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.common.io.stream.Writeable;
+import org.elasticsearch.search.profile.SearchProfileShardResult;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContent;
 import org.elasticsearch.xcontent.ToXContentFragment;
@@ -17,13 +21,14 @@ import org.elasticsearch.xcontent.XContentBuilder;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
 
-class CrossProjectSearchMetrics implements ToXContentFragment {
+class CrossProjectSearchMetrics implements Writeable, ToXContentFragment {
     private long planningPhaseTookTime;
     private long mergingPhaseTookTime;
-    private final HashMap<String, Long> projectsTookTime;
+    private final Map<String, Long> projectsTookTime;
 
     public static final ParseField PLANNING_PHASE_TOOK_TIME_FIELD = new ParseField("planning_phase_took_time");
     public static final ParseField MERGING_PHASE_TOOK_TIME_FIELD = new ParseField("merging_phase_took_time");
@@ -35,6 +40,12 @@ class CrossProjectSearchMetrics implements ToXContentFragment {
         this.planningPhaseTookTime = 0L;
         this.mergingPhaseTookTime = 0L;
         this.projectsTookTime = new HashMap<>();
+    }
+
+    CrossProjectSearchMetrics(StreamInput in) throws IOException {
+        this.planningPhaseTookTime = in.readLong();
+        this.projectsTookTime = in.readMap(StreamInput::readLong);
+        this.mergingPhaseTookTime = in.readLong();
     }
 
     void trackPlanningPhaseTookTime(long planningPhaseTookTime) {
@@ -85,5 +96,12 @@ class CrossProjectSearchMetrics implements ToXContentFragment {
     @Override
     public String toString() {
         return Strings.toString(this);
+    }
+
+    @Override
+    public void writeTo(StreamOutput out) throws IOException {
+        out.writeLong(planningPhaseTookTime);
+        out.writeMap(projectsTookTime, StreamOutput::writeLong);
+        out.writeLong(mergingPhaseTookTime);
     }
 }

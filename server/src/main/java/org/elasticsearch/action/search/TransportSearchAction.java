@@ -944,6 +944,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                             clusters,
                             searchResponse.pointInTimeId(),
                             null,
+                            null,
                             null
                         )
                     );
