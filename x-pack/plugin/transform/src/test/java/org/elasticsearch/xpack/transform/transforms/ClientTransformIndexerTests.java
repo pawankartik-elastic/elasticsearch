@@ -596,7 +596,6 @@ public class ClientTransformIndexerTests extends ESTestCase {
                                 SearchResponse.Clusters.EMPTY,
                                 null,
                                 null,
-                                null,
                                 null
                             )
                         );
