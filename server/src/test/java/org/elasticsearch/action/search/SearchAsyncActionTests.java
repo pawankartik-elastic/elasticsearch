@@ -813,7 +813,6 @@ public class SearchAsyncActionTests extends ESTestCase {
                 Clusters.EMPTY,
                 null,
                 null,
-                null,
                 null
             );
         }

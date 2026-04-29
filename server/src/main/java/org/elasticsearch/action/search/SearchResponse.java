@@ -278,6 +278,47 @@ public class SearchResponse extends ActionResponse implements ChunkedToXContentO
         this.cpsMetrics = cpsMetrics;
     }
 
+    public SearchResponse(
+        SearchHits hits,
+        InternalAggregations aggregations,
+        Suggest suggest,
+        boolean timedOut,
+        Boolean terminatedEarly,
+        SearchProfileResults profileResults,
+        int numReducePhases,
+        String scrollId,
+        int totalShards,
+        int successfulShards,
+        int skippedShards,
+        long tookInMillis,
+        ShardSearchFailure[] shardFailures,
+        Clusters clusters,
+        BytesReference pointInTimeId,
+        @Nullable List<SearchHits> topHitsToRelease,
+        @Nullable List<SearchHit> completionOptionHitsToRelease
+    ) {
+        this(
+            hits,
+            aggregations,
+            suggest,
+            timedOut,
+            terminatedEarly,
+            profileResults,
+            numReducePhases,
+            scrollId,
+            totalShards,
+            successfulShards,
+            skippedShards,
+            tookInMillis,
+            shardFailures,
+            clusters,
+            pointInTimeId,
+            topHitsToRelease,
+            completionOptionHitsToRelease,
+            null
+        );
+    }
+
     private static List<SearchHits> collectTopHitsFromAggregations(InternalAggregations aggs, boolean incRef) {
         if (aggs == null) {
             return Collections.emptyList();

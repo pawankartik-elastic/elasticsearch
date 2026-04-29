@@ -879,7 +879,6 @@ public class ClientTransformIndexerTests extends ESTestCase {
                                 ? CompositeBytesReference.of(searchRequest.pointInTimeBuilder().getEncodedId(), new BytesArray("+"))
                                 : null,
                             null,
-                            null,
                             null
                         )
                     );
