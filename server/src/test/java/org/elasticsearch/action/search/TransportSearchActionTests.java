@@ -1073,6 +1073,7 @@ public class TransportSearchActionTests extends ESTestCase {
                 SearchResponse.Clusters.EMPTY,
                 null,
                 null,
+                null,
                 null
             )
         );
