@@ -492,6 +492,11 @@ public class SearchResponse extends ActionResponse implements ChunkedToXContentO
         return profileResults.getShardResults();
     }
 
+    @Nullable
+    public CrossProjectSearchMetrics getCrossProjectMetrics() {
+        return cpsMetrics;
+    }
+
     /**
      * The {@link SearchProfileResults} backing this response, including coordinator request metadata when attached
      * ({@link SearchProfileResults#getOriginalSource()} / {@link SearchProfileResults#getRequestIndices()}).

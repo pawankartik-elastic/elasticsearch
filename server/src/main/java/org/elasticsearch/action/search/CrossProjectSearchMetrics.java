@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
 
-class CrossProjectSearchMetrics implements Writeable, ToXContentFragment {
+public class CrossProjectSearchMetrics implements Writeable, ToXContentFragment {
     private long planningPhaseTookTime;
     private long mergingPhaseTookTime;
     private final Map<String, Long> projectsTookTime;
@@ -35,23 +35,23 @@ class CrossProjectSearchMetrics implements Writeable, ToXContentFragment {
     public static final String PROJECTS_TOOK_TIME_NAME = "projects_took_time";
     public static final String PROJECTS_NAME = "projects";
 
-    CrossProjectSearchMetrics() {
+    public CrossProjectSearchMetrics() {
         this.planningPhaseTookTime = 0L;
         this.mergingPhaseTookTime = 0L;
         this.projectsTookTime = new HashMap<>();
     }
 
-    CrossProjectSearchMetrics(StreamInput in) throws IOException {
+    public CrossProjectSearchMetrics(StreamInput in) throws IOException {
         this.planningPhaseTookTime = in.readLong();
         this.projectsTookTime = in.readMap(StreamInput::readLong);
         this.mergingPhaseTookTime = in.readLong();
     }
 
-    void trackPlanningPhaseTookTime(long planningPhaseTookTime) {
+    public void trackPlanningPhaseTookTime(long planningPhaseTookTime) {
         this.planningPhaseTookTime = planningPhaseTookTime;
     }
 
-    void trackProjectTookTime(String projectName, long projectTookTime) {
+    public void trackProjectTookTime(String projectName, long projectTookTime) {
         if (projectName.equals(RemoteClusterAware.LOCAL_CLUSTER_GROUP_KEY)) {
             projectName = "origin_project";
         }
@@ -59,8 +59,20 @@ class CrossProjectSearchMetrics implements Writeable, ToXContentFragment {
         this.projectsTookTime.put(projectName, projectTookTime);
     }
 
-    void trackMergingPhaseTookTime(long mergingPhaseTookTime) {
+    public void trackMergingPhaseTookTime(long mergingPhaseTookTime) {
         this.mergingPhaseTookTime = mergingPhaseTookTime;
+    }
+
+    public long getPlanningPhaseTookTime() {
+        return planningPhaseTookTime;
+    }
+
+    public Map<String, Long> getProjectsTookTime() {
+        return projectsTookTime;
+    }
+
+    public long getMergingPhaseTookTime() {
+        return mergingPhaseTookTime;
     }
 
     @Override
