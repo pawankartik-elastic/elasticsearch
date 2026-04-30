@@ -53,7 +53,7 @@ public class CrossProjectSearchMetrics implements Writeable, ToXContentFragment 
 
     public void trackProjectTookTime(String projectName, long projectTookTime) {
         if (projectName.equals(RemoteClusterAware.LOCAL_CLUSTER_GROUP_KEY)) {
-            projectName = "origin_project";
+            projectName = "_origin";
         }
 
         this.projectsTookTime.put(projectName, projectTookTime);
