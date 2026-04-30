@@ -13,6 +13,7 @@ import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.io.stream.Writeable;
+import org.elasticsearch.transport.RemoteClusterAware;
 import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContent;
 import org.elasticsearch.xcontent.ToXContentFragment;
@@ -51,6 +52,10 @@ class CrossProjectSearchMetrics implements Writeable, ToXContentFragment {
     }
 
     void trackProjectTookTime(String projectName, long projectTookTime) {
+        if (projectName.equals(RemoteClusterAware.LOCAL_CLUSTER_GROUP_KEY)) {
+            projectName = "origin_project";
+        }
+
         this.projectsTookTime.put(projectName, projectTookTime);
     }
 
