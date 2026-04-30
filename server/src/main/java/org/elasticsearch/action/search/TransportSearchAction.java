@@ -896,6 +896,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
         TimeValue forceConnectTimeoutSecs,
         Optional<CrossProjectSearchMetrics> cpsMetrics
     ) {
+        var planningPhaseTimeProver = new SearchTimeProvider(System.currentTimeMillis(), System.nanoTime(), System::nanoTime);
         final var remoteClientResponseExecutor = threadPool.executor(ThreadPool.Names.SEARCH_COORDINATION);
         if (resolvedIndices.getLocalIndices() == null && resolvedIndices.getRemoteClusterIndices().size() == 1) {
             SearchCoordinatorContext searchCoordinatorContext = SearchCoordinatorContext.snapshotProfileCoordinatorMetadata(searchRequest);
@@ -921,6 +922,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                 public void onResponse(SearchResponse searchResponse) {
                     // overwrite the existing cluster entry with the updated one
                     ccsClusterInfoUpdate(searchResponse, clusters, clusterAlias, shouldSkipOnFailure);
+                    cpsMetrics.ifPresent(c -> c.trackProjectTookTime(clusterAlias, planningPhaseTimeProver.buildTookInMillis()));
                     SearchProfileResults profile = getSearchProfileResults(searchResponse, searchCoordinatorContext);
 
                     ActionListener.respondAndRelease(
@@ -943,7 +945,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                             searchResponse.pointInTimeId(),
                             null,
                             null,
-                            null
+                            cpsMetrics.orElse(null)
                         )
                     );
                 }
@@ -1024,7 +1026,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                     clusters,
                     task.getProgressListener(),
                     listener,
-                    new SearchTimeProvider(System.currentTimeMillis(), System.nanoTime(), System::nanoTime),
+                    planningPhaseTimeProver,
                     cpsMetrics
                 );
 
@@ -1062,7 +1064,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
                     clusters,
                     task.getProgressListener(),
                     listener,
-                    new SearchTimeProvider(System.currentTimeMillis(), System.nanoTime(), System::nanoTime),
+                    planningPhaseTimeProver,
                     cpsMetrics
                 );
                 SearchRequest ccsLocalSearchRequest = SearchRequest.subSearchRequest(
